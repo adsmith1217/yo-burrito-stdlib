@@ -8,31 +8,35 @@ const connection = mysql.createConnection({
     database: "adamsmi4_yo-burrito"
 });
 
-//Query to get count of burritos by Slack User ID
-var getBurritoCountByUser = function(callback, slackUserId) {
-    connection.connect(function(err) {
-        console.log('Trying to connect...');
-        if (err) throw err;
-        console.log('Connected!');
-        var slackUserId = 1;
-        var queryString = "SELECT Count(Id) AS Count FROM burritos WHERE SlackUserId = " + slackUserId;
-        console.log(queryString);
-        connection.query(queryString, function (err, result, fields) {
-            if (err) throw err;
-            var count = result[0].Count;
-            console.log(count);
-            callback(null, count);
-        });
-    });
-};
-
 module.exports = {
-    getCount : getBurritoCountByUser
+    //Query to get count of burritos by Slack User ID
+    getBurritoCountByUser : function(callback, slackUserId) {
+        var count = 0;
+        connection.connect(function(err) {
+            console.log('Trying to connect...');
+            if (err) throw err;
+            console.log('Connected!');
+            var queryString = "SELECT Count(Id) AS Count FROM burritos WHERE RecipientUID = " + slackUserId;
+            console.log(queryString);
+            connection.query(queryString, function (err, result, fields) {
+                if (err) throw err;
+                count = result[0].Count;
+                console.log(count);
+                // return count;
+            }).then( count => {return count} );
+        });
+        // return count;
+    }
 }
 
-//Call function
-getBurritoCountByUser(function (err, result) {
-    console.log('count');
-    if (err) console.log("Database error!");
-    else console.log(result);
-});
+// //Call function
+// getBurritoCountByUser(function (err, result) {
+//     console.log('count');
+//     if (err) console.log("Database error!");
+//     else console.log(result);
+// });
+
+// //Export method
+// module.exports = {
+//     getCount : getBurritoCountByUser
+// }
