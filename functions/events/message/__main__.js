@@ -44,22 +44,26 @@ module.exports = (user, channel, text = '', event = {}, botToken = null, callbac
                 console.log('Trying to connect...');
                 if (err) throw err;
                 console.log('Connected!');
-                var RecipientUID = text.substr(text.indexOf('@') + 1, text.indexOf(' '));
+                var RecipientUID = text.substr(text.indexOf('@') + 1, text.indexOf(':burrito:'));
                 var DonorUID = user;
                 var queryValues = "('" + RecipientUID + "', '" + DonorUID + "')";
-                var queryString = "INSERT INTO burritos (RecipientUID, DonorUID) VALUES " + queryValues;
+                var queryString = "INSERT INTO burritos (RecipientUID, DonorUID) VALUES " + queryValues; //TODO: send this query as a message but don't fire it
                 console.log(queryString);
                 connection.query(queryString, function (err, result, fields) {
                     if (err) throw err;
                 });
             });
         };
-    
+        
         insertBurrito(function (err, result) {
+            var RecipientUID = text.substr(text.indexOf('@') + 1, text.indexOf(' '));
+            var DonorUID = user;
+            var queryValues = "('" + RecipientUID + "', '" + DonorUID + "')";
+            var queryString = "INSERT INTO burritos (RecipientUID, DonorUID) VALUES " + queryValues; //TODO: send this query as a message but don't fire it
             if (err) console.log("Database error!");
             else {
                 callback(null, {
-                    text: `<@${user}> gave you a burrito!`,
+                    text: `<@${user}> gave you a burrito!` + queryString,
                 });
             }
         });
